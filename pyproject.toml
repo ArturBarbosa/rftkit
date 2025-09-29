@@ -1,7 +1,7 @@
 [project]
 name = "rftkit"
 version = "0.1.0"
-description = "Add your description here"
+description = "A comprehensive toolkit for OpenAI's Reinforcement Fine-Tuning (RFT), featuring Pydantic-based grader creation, Graders API SDK, and dataset utilities."
 readme = "README.md"
 authors = [
     { name = "Artur Barbosa", email = "arturbarbosa10@gmail.com" }
