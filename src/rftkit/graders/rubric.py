@@ -8,11 +8,11 @@ from ..prompts.rubric import RUBRIC_GRADER_PROMPT_TEMPLATE
 
 class RubricGrader(ScoreModelGrader, WeightedGrader):
     """
-    Score model grader for evaluating responses against a structured rubric.
+    Score model grader for evaluating outputs against a structured rubric.
     
-    The RubricGrader uses OpenAI's scoring model to evaluate activity outputs
+    The RubricGrader uses OpenAI's scoring model to evaluate model outputs
     based on defined rubric criteria. Each rubric item represents a specific
-    quality dimension (e.g., "Assessment Validity", "Engagement Factor") with
+    quality dimension (e.g., "Accuracy", "Completeness", "Clarity") with
     detailed scoring guidelines.
     
     The grader automatically constructs a prompt that includes:
@@ -36,10 +36,10 @@ class RubricGrader(ScoreModelGrader, WeightedGrader):
         >>> 
         >>> rubric = RubricItem(
         ...     id=1,
-        ...     content="Assessment Validity: How accurately the activity measures..."
+        ...     content="Accuracy: How correct and precise the output is..."
         ... )
         >>> grader = RubricGrader(
-        ...     name="rubric_assessment_validity",
+        ...     name="rubric_accuracy",
         ...     rubric=rubric,
         ...     weight=1.0
         ... )

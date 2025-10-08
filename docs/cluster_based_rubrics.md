@@ -214,7 +214,7 @@ Some rubrics could apply with different weights across clusters:
 ## Best Practices
 
 ### 1. Cluster Cohesion
-Keep clusters focused on similar activity types with shared characteristics.
+Keep clusters focused on similar data types with shared characteristics.
 
 ### 2. Rubric Selection
 Choose 8-10 rubrics per cluster that are:

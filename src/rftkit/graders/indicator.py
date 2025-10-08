@@ -6,16 +6,16 @@ from ..base import PythonGrader
 
 class IndicatorGrader(PythonGrader):
     """
-    Python grader for determining rubric relevance based on activity type.
+    Python grader for determining rubric relevance based on data type/cluster.
     
     The IndicatorGrader implements the cluster-based rubric system by returning
-    1.0 if a rubric applies to the current activity type (cluster) and 0.0 if it
+    1.0 if a rubric applies to the current data type (cluster) and 0.0 if it
     doesn't. This allows the MultiGrader to filter out irrelevant rubrics by
     multiplying their scores by 0.
     
-    Each activity format represents a cluster with its own specific set of rubrics.
-    For example, "ChatIntroduceLexisTeacher" has 8 specific rubrics, while
-    "VideoIntroduceGrammarClassroom" has a different set of 8 rubrics.
+    Each data type/cluster has its own specific set of rubrics. For example,
+    "cluster_a" might have 8 rubrics focused on accuracy and completeness, while
+    "cluster_b" has different rubrics focused on performance and scalability.
     
     The rubric name is injected into the source code via template replacement,
     allowing multiple IndicatorGrader instances to share the same base code
@@ -28,8 +28,8 @@ class IndicatorGrader(PythonGrader):
     Examples:
         >>> from rftkit.graders import IndicatorGrader
         >>> indicator = IndicatorGrader(
-        ...     name="indicator_active_participation",
-        ...     rubric_name="active_participation"
+        ...     name="indicator_accuracy",
+        ...     rubric_name="accuracy"
         ... )
         >>> config = indicator.config
         >>> # The source code will contain the specific rubric name

@@ -37,33 +37,33 @@ from rftkit import (
 
 # 1. Create a formatting grader
 format_grader = FormattingGrader(
-    name="json_validator",
+    name="format_validator",
     weight=0.2
 )
 
 # 2. Create a rubric grader
 rubric = RubricItem(
     id=1,
-    content="Assessment Validity: Measures accuracy of skill assessment..."
+    content="Accuracy: How correct and precise the output is. 0.0 = incorrect, 1.0 = perfect"
 )
 rubric_grader = RubricGrader(
-    name="rubric_validity",
+    name="rubric_accuracy",
     rubric=rubric,
     weight=1.0
 )
 
 # 3. Create an indicator grader (cluster-based filtering)
 indicator = IndicatorGrader(
-    name="indicator_validity",
-    rubric_name="assessment_validity"
+    name="indicator_accuracy",
+    rubric_name="accuracy"
 )
 
 # 4. Combine with aggregator
 aggregator = AggregatorGrader(
     name="final_score",
     graders=[format_grader, rubric_grader, indicator],
-    rubric_to_indicator_map={"rubric_validity": "indicator_validity"},
-    formatting_grader_name="json_validator"
+    rubric_to_indicator_map={"rubric_accuracy": "indicator_accuracy"},
+    formatting_grader_name="format_validator"
 )
 
 # 5. Export for OpenAI RFT API
@@ -74,18 +74,18 @@ config = aggregator.config
 
 ### Cluster-Based Rubric System
 
-RFTKit implements a cluster-based evaluation system where each activity format (cluster) has its own specific set of rubrics:
+RFTKit implements a cluster-based evaluation system where each data type/cluster has its own specific set of rubrics:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                    Input Activity                        │
-│                  (e.g., Chat response)                   │
+│                    Input Data                            │
+│                  (e.g., Model output)                    │
 └────────────────────┬────────────────────────────────────┘
                      │
                      ▼
 ┌─────────────────────────────────────────────────────────┐
-│                 Activity Type Detection                  │
-│            (Extract format from content)                 │
+│                  Cluster Type Detection                  │
+│              (Extract type from content)                 │
 └────────────────────┬────────────────────────────────────┘
                      │
                      ▼
@@ -186,19 +186,20 @@ aggregator = AggregatorGrader(
 
 ## Cluster Configuration
 
-Define which rubrics apply to which activity types by modifying the cluster mapping in `indicator_validator.py`:
+Define which rubrics apply to which data types/clusters by modifying the cluster mapping in `indicator_validator.py`:
 
 ```python
-activity_type_to_rubric_item_map = {
-    "ChatIntroduceLexisTeacher": [
-        "active_participation",
-        "alignment_to_purpose",
-        "complete_learning_cycle",
+cluster_to_rubric_map = {
+    "cluster_a": [
+        "accuracy",
+        "completeness",
+        "clarity",
         # ... more rubrics
     ],
-    "VideoIntroduceGrammarClassroom": [
-        "alignment_to_purpose",
-        "mcq_quality",
+    "cluster_b": [
+        "efficiency",
+        "scalability",
+        "performance",
         # ... different rubrics
     ],
 }
