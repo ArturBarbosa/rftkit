@@ -23,6 +23,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **BREAKING**: Default RubricGrader scoring range changed from [0.0, 1.0] to [1, 5] (Likert scale)
+- Default pass threshold changed from 0.5 to 3 to align with new 1-5 scale
+- Updated rubric grader prompt template to use Likert scale descriptions (1=Strongly Disagree, 5=Strongly Agree)
+- Updated all documentation and examples to reflect the new Likert scale
+
 ### Planned
 - Support for weighted indicators (continuous 0.0-1.0 instead of binary 0/1)
 - Dynamic cluster discovery from data patterns

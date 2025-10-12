@@ -44,7 +44,7 @@ format_grader = FormattingGrader(
 # 2. Create a rubric grader
 rubric = RubricItem(
     id=1,
-    content="Accuracy: How correct and precise the output is. 0.0 = incorrect, 1.0 = perfect"
+    content="Accuracy: How correct and precise the output is. Evaluate on a 1-5 Likert scale."
 )
 rubric_grader = RubricGrader(
     name="rubric_accuracy",
@@ -99,7 +99,7 @@ RFTKit implements a cluster-based evaluation system where each data type/cluster
 ┌──────────┐  ┌──────────┐  ┌──────────┐
 │ Rubric 1 │  │ Rubric 2 │  │ Rubric N │
 │ (Active) │  │ (Active) │  │(Inactive)│
-│ Score:0.8│  │ Score:0.9│  │ Score:0  │
+│ Score:4.2│  │ Score:4.5│  │ Score:0  │
 └──────────┘  └──────────┘  └──────────┘
         │            │            │
         └────────────┼────────────┘
@@ -145,7 +145,7 @@ format_grader = FormattingGrader(
 
 ### RubricGrader
 
-Uses LLMs to evaluate outputs against specific criteria:
+Uses LLMs to evaluate outputs against specific criteria using a 1-5 Likert scale:
 
 ```python
 rubric = RubricItem(
@@ -156,7 +156,9 @@ rubric_grader = RubricGrader(
     name="rubric_name",
     rubric=rubric,
     weight=1.0,
-    model="gpt-4o-2024-08-06"
+    model="gpt-4o-2024-08-06",
+    range=[1, 5],  # Default Likert scale
+    pass_threshold=3  # Default threshold
 )
 ```
 

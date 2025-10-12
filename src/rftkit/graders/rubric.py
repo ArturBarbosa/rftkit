@@ -24,7 +24,7 @@ class RubricGrader(ScoreModelGrader, WeightedGrader):
     - id: Unique identifier for the rubric
     - content: Detailed description of the evaluation criteria
     
-    The model returns a score from 0.0 to 1.0, which is then weighted and
+    The model returns a score from 1 to 5 (Likert scale), which is then weighted and
     combined with other graders in the MultiGrader.
     
     Attributes:

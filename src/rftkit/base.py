@@ -128,13 +128,13 @@ class ScoreModelGrader(BaseGrader):
         sampling_params (dict[str, Any]): Model inference parameters for reproducibility
 
     Examples:
-        >>> messages = [{"role": "user", "content": "Rate this essay from 0 to 1..."}]
+        >>> messages = [{"role": "user", "content": "Rate this essay from 1 to 5..."}]
         >>> grader = ScoreModelGrader(
         ...     name="essay_scorer",
         ...     model="gpt-4o",
         ...     input=messages,
-        ...     pass_threshold=0.7,
-        ...     range=[0.0, 1.0],
+        ...     pass_threshold=3,
+        ...     range=[1, 5],
         ...     sampling_params={"temperature": 0.1}
         ... )
         >>> config = grader.config
