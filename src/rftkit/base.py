@@ -1,7 +1,7 @@
 """Base classes for OpenAI Reinforcement Fine-Tuning graders."""
 
 from abc import ABC, abstractmethod
-from typing import Any, List
+from typing import Any, List, Literal
 import importlib
 import inspect
 
@@ -104,6 +104,63 @@ class PythonGrader(BaseGrader):
             "type": GraderType.PYTHON.value,
             "source": self.process_code(inspect.getsource(grader_module)),
             "image_tag": DEFAULT_IMAGE_TAG
+        }
+
+
+class StringCheckGrader(BaseGrader):
+    """
+    Grader that performs deterministic string comparisons between model output and a reference.
+
+    String check graders are ideal for exact match validation where responses
+    must match a reference value exactly, or for pattern-based matching using
+    case-sensitive or case-insensitive contains operations.
+
+    Both ``input`` and ``reference`` support OpenAI's template syntax
+    (e.g., ``{{ sample.output_text }}``, ``{{ item.reference_answer }}``).
+
+    Attributes:
+        input (str): Template string for the model output to evaluate
+        reference (str): Template string for the expected answer
+        operation (str): Comparison operation to perform
+
+    Examples:
+        >>> grader = StringCheckGrader(
+        ...     name="exact_match",
+        ...     input="{{ sample.output_text }}",
+        ...     reference="{{ item.reference_answer }}",
+        ...     operation="eq"
+        ... )
+        >>> config = grader.config
+        >>> print(config["type"])  # "string_check"
+    """
+
+    input: str = Field(
+        ...,
+        description="Template string for the model output to evaluate"
+    )
+    reference: str = Field(
+        ...,
+        description="Template string for the expected answer"
+    )
+    operation: Literal["eq", "neq", "like", "ilike"] = Field(
+        ...,
+        description=(
+            "Comparison operation: "
+            "'eq' (exact match), "
+            "'neq' (not equal), "
+            "'like' (case-sensitive contains), "
+            "'ilike' (case-insensitive contains)"
+        )
+    )
+
+    @property
+    def config(self) -> dict[str, Any]:
+        return {
+            "name": self.name,
+            "type": GraderType.STRING_CHECK.value,
+            "input": self.input,
+            "reference": self.reference,
+            "operation": self.operation,
         }
 
 

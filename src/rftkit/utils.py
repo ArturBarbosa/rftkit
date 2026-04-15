@@ -67,6 +67,10 @@ def validate_grader_config(config: Dict[str, Any]) -> bool:
     if grader_type == "python":
         if "source" not in config:
             return False
+    elif grader_type == "string_check":
+        required = ["input", "reference", "operation"]
+        if not all(field in config for field in required):
+            return False
     elif grader_type == "score_model":
         required = ["model", "input", "range", "pass_threshold"]
         if not all(field in config for field in required):
