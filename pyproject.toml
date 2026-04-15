@@ -5,7 +5,7 @@ description = "A comprehensive toolkit for OpenAI's Reinforcement Fine-Tuning (R
 readme = "README.md"
 license = { text = "MIT" }
 authors = [
-    { name = "Artur Barbosa", email = "arturbarbosa10@gmail.com" }
+    { name = "Artur Barbosa Carneiro", email = "arturbarbosa10@gmail.com" }
 ]
 requires-python = ">=3.12"
 dependencies = [
@@ -25,11 +25,11 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/rftkit"
-Documentation = "https://github.com/yourusername/rftkit/blob/main/README.md"
-Repository = "https://github.com/yourusername/rftkit"
-Issues = "https://github.com/yourusername/rftkit/issues"
-Changelog = "https://github.com/yourusername/rftkit/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/ArturBarbosa/rftkit"
+Documentation = "https://github.com/ArturBarbosa/rftkit/blob/main/README.md"
+Repository = "https://github.com/ArturBarbosa/rftkit"
+Issues = "https://github.com/ArturBarbosa/rftkit/issues"
+Changelog = "https://github.com/ArturBarbosa/rftkit/blob/main/CHANGELOG.md"
 
 [build-system]
 requires = ["hatchling"]

@@ -18,7 +18,7 @@ pip install rftkit
 Or install from source:
 
 ```bash
-git clone https://github.com/yourusername/rftkit.git
+git clone https://github.com/ArturBarbosa/rftkit.git
 cd rftkit
 pip install -e .
 ```
@@ -126,7 +126,7 @@ See the `examples/` directory for Jupyter notebooks demonstrating:
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/rftkit.git
+git clone https://github.com/ArturBarbosa/rftkit.git
 cd rftkit
 
 # Install in editable mode with dev dependencies
@@ -154,10 +154,10 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 If you use RFTKit in your research, please cite:
 
 ```bibtex
-@software{rftkit2024,
+@software{rftkit2026,
   title={RFTKit: Reinforcement Fine-Tuning Toolkit},
-  author={Barbosa, Artur},
-  year={2024},
-  url={https://github.com/yourusername/rftkit}
+  author={Barbosa Carneiro, Artur},
+  year={2026},
+  url={https://github.com/ArturBarbosa/rftkit}
 }
 ```
