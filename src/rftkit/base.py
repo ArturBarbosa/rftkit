@@ -164,6 +164,85 @@ class StringCheckGrader(BaseGrader):
         }
 
 
+class TextSimilarityGrader(BaseGrader):
+    """
+    Grader that compares model output to a reference using text similarity metrics.
+
+    Text similarity graders are useful for open-ended or paraphrase matching
+    where exact string comparison is too strict. They support a variety of
+    evaluation metrics including n-gram overlap, edit distance, and
+    vector-based similarity.
+
+    Both ``input`` and ``reference`` support OpenAI's template syntax
+    (e.g., ``{{ sample.output_text }}``, ``{{ item.reference_answer }}``).
+
+    Attributes:
+        input (str): Template string for the model output to evaluate
+        reference (str): Template string for the expected answer
+        evaluation_metric (str): Similarity metric to use for comparison
+        pass_threshold (float): Minimum similarity score to consider a pass
+
+    Examples:
+        >>> grader = TextSimilarityGrader(
+        ...     name="similarity_check",
+        ...     input="{{ sample.output_text }}",
+        ...     reference="{{ item.reference_answer }}",
+        ...     evaluation_metric="fuzzy_match",
+        ...     pass_threshold=0.8
+        ... )
+        >>> config = grader.config
+        >>> print(config["type"])  # "text_similarity"
+    """
+
+    input: str = Field(
+        ...,
+        description="Template string for the model output to evaluate"
+    )
+    reference: str = Field(
+        ...,
+        description="Template string for the expected answer"
+    )
+    evaluation_metric: Literal[
+        "fuzzy_match",
+        "bleu",
+        "gleu",
+        "meteor",
+        "cosine",
+        "rouge_1",
+        "rouge_2",
+        "rouge_3",
+        "rouge_4",
+        "rouge_5",
+        "rouge_l",
+    ] = Field(
+        ...,
+        description="Similarity metric to use for comparison"
+    )
+    pass_threshold: float = Field(
+        ...,
+        description="Minimum similarity score to consider a pass (0.0 to 1.0)"
+    )
+
+    @field_validator('pass_threshold')
+    @classmethod
+    def validate_pass_threshold(cls, v: float) -> float:
+        """Validate that pass_threshold is between 0 and 1."""
+        if not (0.0 <= v <= 1.0):
+            raise ValueError("pass_threshold must be between 0.0 and 1.0")
+        return v
+
+    @property
+    def config(self) -> dict[str, Any]:
+        return {
+            "name": self.name,
+            "type": GraderType.TEXT_SIMILARITY.value,
+            "input": self.input,
+            "reference": self.reference,
+            "evaluation_metric": self.evaluation_metric,
+            "pass_threshold": self.pass_threshold,
+        }
+
+
 class ScoreModelGrader(BaseGrader):
     """
     Grader that uses Large Language Models to assign numerical scores to responses.
