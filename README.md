@@ -1,14 +1,13 @@
 # RFTKit - Reinforcement Fine-Tuning Toolkit
 
-A comprehensive Python toolkit for OpenAI's Reinforcement Fine-Tuning (RFT), featuring Pydantic-based grader creation, cluster-based rubric evaluation, and seamless OpenAI API integration.
+A comprehensive Python toolkit for [OpenAI's Reinforcement Fine-Tuning (RFT)](https://platform.openai.com/docs/guides/reinforcement-fine-tuning), featuring Pydantic-based grader creation, a Graders API SDK, and dataset utilities.
 
 ## Features
 
-- 🎯 **Cluster-Based Rubric System**: Automatically filter rubrics based on activity type
-- 🔧 **Pydantic-Based Graders**: Type-safe, validated grader definitions
-- 📊 **Multiple Grader Types**: Python, Score Model, and Multi graders
-- 🎨 **Flexible Aggregation**: Combine graders with custom weighted formulas
-- 🚀 **OpenAI RFT Ready**: Export configs directly for OpenAI's RFT API
+- **Pydantic-Based Graders**: Type-safe, validated grader definitions
+- **Multiple Grader Types**: Python, Score Model, and Multi graders
+- **Flexible Composition**: Combine graders with custom weighted formulas
+- **OpenAI RFT Ready**: Export configs directly for OpenAI's RFT API
 
 ## Installation
 
@@ -30,18 +29,17 @@ pip install -e .
 from rftkit import (
     FormattingGrader,
     RubricGrader,
-    IndicatorGrader,
-    AggregatorGrader,
-    RubricItem
+    RubricItem,
+    export_grader_config,
 )
 
-# 1. Create a formatting grader
+# 1. Create a formatting grader (validates JSON structure)
 format_grader = FormattingGrader(
     name="format_validator",
     weight=0.2
 )
 
-# 2. Create a rubric grader
+# 2. Create a rubric grader (LLM-based evaluation)
 rubric = RubricItem(
     id=1,
     content="Accuracy: How correct and precise the output is. 0.0 = incorrect, 1.0 = perfect"
@@ -52,89 +50,15 @@ rubric_grader = RubricGrader(
     weight=1.0
 )
 
-# 3. Create an indicator grader (cluster-based filtering)
-indicator = IndicatorGrader(
-    name="indicator_accuracy",
-    rubric_name="accuracy"
-)
-
-# 4. Combine with aggregator
-aggregator = AggregatorGrader(
-    name="final_score",
-    graders=[format_grader, rubric_grader, indicator],
-    rubric_to_indicator_map={"rubric_accuracy": "indicator_accuracy"},
-    formatting_grader_name="format_validator"
-)
-
-# 5. Export for OpenAI RFT API
-config = aggregator.config
+# 3. Export config for OpenAI RFT API
+export_grader_config(rubric_grader, "grader_config.json")
 ```
-
-## Architecture
-
-### Cluster-Based Rubric System
-
-RFTKit implements a cluster-based evaluation system where each data type/cluster has its own specific set of rubrics:
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                    Input Data                            │
-│                  (e.g., Model output)                    │
-└────────────────────┬────────────────────────────────────┘
-                     │
-                     ▼
-┌─────────────────────────────────────────────────────────┐
-│                  Cluster Type Detection                  │
-│              (Extract type from content)                 │
-└────────────────────┬────────────────────────────────────┘
-                     │
-                     ▼
-┌─────────────────────────────────────────────────────────┐
-│                   Indicator Grader                       │
-│         (Determines which rubrics apply)                 │
-└────────────────────┬────────────────────────────────────┘
-                     │
-        ┌────────────┼────────────┐
-        ▼            ▼            ▼
-┌──────────┐  ┌──────────┐  ┌──────────┐
-│ Rubric 1 │  │ Rubric 2 │  │ Rubric N │
-│ (Active) │  │ (Active) │  │(Inactive)│
-│ Score:0.8│  │ Score:0.9│  │ Score:0  │
-└──────────┘  └──────────┘  └──────────┘
-        │            │            │
-        └────────────┼────────────┘
-                     ▼
-┌─────────────────────────────────────────────────────────┐
-│                   Aggregator Grader                      │
-│                                                          │
-│  Final = Format_Score +                                 │
-│          Σ(Indicator[i] × Weight[i] × Rubric_Score[i]) │
-└─────────────────────────────────────────────────────────┘
-```
-
-### Mathematical Model
-
-The final score is calculated using the formula:
-
-```
-S = s_F · w_F + Σ(s_c,i · w_r,i · s_r,i)
-```
-
-Where:
-- `S`: Final score
-- `s_F`: FormattingGrader score
-- `w_F`: FormattingGrader weight
-- `s_r,i`: Rubric grader i's score
-- `w_r,i`: Rubric grader i's weight
-- `s_c,i`: Indicator grader i's score (0 or 1)
-
-The indicator score acts as a binary mask, zeroing out irrelevant rubrics for each activity type.
 
 ## Grader Types
 
 ### FormattingGrader
 
-Validates JSON structure and required fields using Python code:
+A `PythonGrader` that validates JSON structure and required fields:
 
 ```python
 format_grader = FormattingGrader(
@@ -145,7 +69,7 @@ format_grader = FormattingGrader(
 
 ### RubricGrader
 
-Uses LLMs to evaluate outputs against specific criteria:
+A `ScoreModelGrader` that uses an LLM to evaluate outputs against specific criteria:
 
 ```python
 rubric = RubricItem(
@@ -160,50 +84,14 @@ rubric_grader = RubricGrader(
 )
 ```
 
-### IndicatorGrader
+### Base Classes
 
-Determines rubric relevance based on activity type:
+RFTKit provides base classes you can extend to build custom graders:
 
-```python
-indicator = IndicatorGrader(
-    name="indicator_name",
-    rubric_name="rubric_identifier"
-)
-```
-
-### AggregatorGrader
-
-Combines multiple graders with a weighted formula:
-
-```python
-aggregator = AggregatorGrader(
-    name="final_score",
-    graders=[format_grader, rubric_grader, indicator],
-    rubric_to_indicator_map={"rubric": "indicator"},
-    formatting_grader_name="format"
-)
-```
-
-## Cluster Configuration
-
-Define which rubrics apply to which data types/clusters by modifying the cluster mapping in `indicator_validator.py`:
-
-```python
-cluster_to_rubric_map = {
-    "cluster_a": [
-        "accuracy",
-        "completeness",
-        "clarity",
-        # ... more rubrics
-    ],
-    "cluster_b": [
-        "efficiency",
-        "scalability",
-        "performance",
-        # ... different rubrics
-    ],
-}
-```
+- **`PythonGrader`**: Execute custom Python code for evaluation
+- **`ScoreModelGrader`**: Use an LLM to assign scores (0-1)
+- **`MultiGrader`**: Combine multiple graders with a custom formula
+- **`WeightedGrader`**: Mixin that adds a `weight` field (0-1)
 
 ## OpenAI RFT Integration
 
@@ -218,10 +106,12 @@ client = openai.OpenAI()
 job = client.fine_tuning.jobs.create(
     training_file="file-abc123",
     model="gpt-4o-2024-08-06",
-    hyperparameters={
-        "n_epochs": 3
-    },
-    grader=aggregator.config  # Use your grader config
+    method={
+        "type": "reinforcement",
+        "reinforcement": {
+            "grader": rubric_grader.config
+        }
+    }
 )
 ```
 
@@ -230,8 +120,6 @@ job = client.fine_tuning.jobs.create(
 See the `examples/` directory for Jupyter notebooks demonstrating:
 
 - Basic grader usage
-- Cluster-based rubric configuration
-- Multi-grader aggregation
 - OpenAI RFT integration
 
 ## Development

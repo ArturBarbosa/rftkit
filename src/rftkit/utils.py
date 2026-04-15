@@ -1,6 +1,6 @@
 """Utility functions for RFTKit grader management."""
 
-from typing import List, Dict, Any
+from typing import Dict, Any
 import json
 from pathlib import Path
 
@@ -14,9 +14,9 @@ def export_grader_config(grader, output_path: str) -> None:
         output_path: Path to save the configuration file
         
     Example:
-        >>> from rftkit import AggregatorGrader
-        >>> aggregator = AggregatorGrader(...)
-        >>> export_grader_config(aggregator, "grader_config.json")
+        >>> from rftkit import RubricGrader
+        >>> grader = RubricGrader(...)
+        >>> export_grader_config(grader, "grader_config.json")
     """
     config = grader.config
     
@@ -76,37 +76,6 @@ def validate_grader_config(config: Dict[str, Any]) -> bool:
             return False
     
     return True
-
-
-def create_rubric_to_indicator_map(rubric_names: List[str]) -> Dict[str, str]:
-    """
-    Create a rubric-to-indicator mapping from a list of rubric names.
-    
-    Assumes indicator names follow the pattern "indicator_{rubric_name}".
-    
-    Args:
-        rubric_names: List of rubric grader names
-        
-    Returns:
-        Dictionary mapping rubric names to indicator names
-        
-    Example:
-        >>> rubrics = ["rubric_validity", "rubric_engagement"]
-        >>> mapping = create_rubric_to_indicator_map(rubrics)
-        >>> # {"rubric_validity": "indicator_validity", ...}
-    """
-    mapping = {}
-    for rubric_name in rubric_names:
-        # Extract the base name (remove "rubric_" prefix if present)
-        if rubric_name.startswith("rubric_"):
-            base_name = rubric_name[7:]  # Remove "rubric_" prefix
-        else:
-            base_name = rubric_name
-        
-        indicator_name = f"indicator_{base_name}"
-        mapping[rubric_name] = indicator_name
-    
-    return mapping
 
 
 def summarize_grader_config(config: Dict[str, Any]) -> str:
