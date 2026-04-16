@@ -75,6 +75,10 @@ def validate_grader_config(config: Dict[str, Any]) -> bool:
         required = ["input", "reference", "evaluation_metric", "pass_threshold"]
         if not all(field in config for field in required):
             return False
+    elif grader_type == "label_model":
+        required = ["model", "input", "labels", "passing_labels"]
+        if not all(field in config for field in required):
+            return False
     elif grader_type == "score_model":
         required = ["model", "input", "range", "pass_threshold"]
         if not all(field in config for field in required):

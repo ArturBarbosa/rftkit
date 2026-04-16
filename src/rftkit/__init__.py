@@ -10,7 +10,7 @@ A comprehensive toolkit for OpenAI's Reinforcement Fine-Tuning (RFT), featuring:
 __version__ = "0.1.0"
 
 from .types import GraderType, RubricItem, Message
-from .base import BaseGrader, PythonGrader, StringCheckGrader, TextSimilarityGrader, ScoreModelGrader, MultiGrader, WeightedGrader
+from .base import BaseGrader, PythonGrader, StringCheckGrader, TextSimilarityGrader, LabelModelGrader, ScoreModelGrader, MultiGrader, WeightedGrader
 from .graders.formatting import FormattingGrader
 from .graders.rubric import RubricGrader
 from .utils import (
@@ -28,6 +28,7 @@ __all__ = [
     "PythonGrader",
     "StringCheckGrader",
     "TextSimilarityGrader",
+    "LabelModelGrader",
     "ScoreModelGrader",
     "MultiGrader",
     "WeightedGrader",

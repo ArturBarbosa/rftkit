@@ -243,6 +243,83 @@ class TextSimilarityGrader(BaseGrader):
         }
 
 
+class LabelModelGrader(BaseGrader):
+    """
+    Grader that uses an LLM to classify model outputs into predefined categories.
+
+    Label model graders leverage LLM reasoning to assign categorical labels
+    to responses. They are useful for sentiment analysis, content classification,
+    compliance checks, or any multi-class labeling task. The grader passes if the
+    assigned label is in the ``passing_labels`` list.
+
+    Attributes:
+        input (List[Message]): Conversation messages that form the classification prompt
+        model (str): OpenAI model identifier for classification
+        labels (List[str]): All possible label values the model can assign
+        passing_labels (List[str]): Subset of labels that constitute a "pass"
+
+    Examples:
+        >>> grader = LabelModelGrader(
+        ...     name="sentiment_check",
+        ...     model="gpt-4o-2024-08-06",
+        ...     input=[
+        ...         {"role": "developer", "content": "Classify the sentiment as 'positive', 'neutral', or 'negative'"},
+        ...         {"role": "user", "content": "Statement: {{ sample.output_text }}"},
+        ...     ],
+        ...     labels=["positive", "neutral", "negative"],
+        ...     passing_labels=["positive", "neutral"]
+        ... )
+        >>> config = grader.config
+        >>> print(config["type"])  # "label_model"
+    """
+
+    input: List[Message] = Field(
+        ...,
+        description="Conversation messages forming the classification prompt"
+    )
+    model: str = Field(
+        default=DEFAULT_SCORE_MODEL,
+        description="Model to use for classification"
+    )
+    labels: List[str] = Field(
+        ...,
+        description="All possible label values the model can assign"
+    )
+    passing_labels: List[str] = Field(
+        ...,
+        description="Subset of labels that constitute a pass"
+    )
+
+    @field_validator('labels')
+    @classmethod
+    def validate_labels(cls, v: List[str]) -> List[str]:
+        """Validate that at least one label is provided."""
+        if len(v) < 1:
+            raise ValueError("At least one label must be provided")
+        return v
+
+    @model_validator(mode='after')
+    def validate_passing_labels_subset(self) -> 'LabelModelGrader':
+        """Validate that all passing_labels are in labels."""
+        invalid = set(self.passing_labels) - set(self.labels)
+        if invalid:
+            raise ValueError(
+                f"passing_labels {invalid} are not in labels {self.labels}"
+            )
+        return self
+
+    @property
+    def config(self) -> dict[str, Any]:
+        return {
+            "name": self.name,
+            "type": GraderType.LABEL_MODEL.value,
+            "model": self.model,
+            "input": self.input,
+            "labels": self.labels,
+            "passing_labels": self.passing_labels,
+        }
+
+
 class ScoreModelGrader(BaseGrader):
     """
     Grader that uses Large Language Models to assign numerical scores to responses.
